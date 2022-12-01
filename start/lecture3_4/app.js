@@ -166,7 +166,7 @@ class App {
             );
             this.raycaster.ray.direction
                 .set(0, 0, -1)
-                .applyMatrix4(this.workingMatrixs);
+                .applyMatrix4(this.workingMatrix);
 
             const intersects = this.raycaster.intersectObjects(
                 this.room.children
@@ -175,7 +175,7 @@ class App {
             if (intersects.length > 0) {
                 intersects[0].object.add(this.hightlight);
                 this.hightlight.visible = true;
-                controller.childeren[0].scale.z = intersects[0].distance;
+                controller.children[0].scale.z = intersects[0].distance;
             } else {
                 this.hightlight.visible = false;
             }
