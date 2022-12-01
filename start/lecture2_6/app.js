@@ -42,7 +42,7 @@ class App {
 
         //Add code here
         this.loadingBar = new LoadingBar();
-        this.loadGLTF();
+        this.loadFBX();
 
         this.controls = new OrbitControls(
             this.camera,
@@ -105,7 +105,34 @@ class App {
         );
     }
 
-    loadFBX() {}
+    loadFBX() {
+        const self = this;
+        const loader = new FBXLoader().setPath("../../assets/");
+
+        loader.load(
+            "office-chair.fbx",
+            function (object) {
+                self.chair = object;
+                const bbox = new THREE.Box3().setFromObject(object);
+                console.log(
+                    `min:${vector3ToString(
+                        bbox.min,
+                        2
+                    )} - max:${vector3ToString(bbox.max, 2)}`
+                );
+                self.scene.add(object);
+                self.loadingBar.visible = false;
+                self.renderer.setAnimationLoop(self.render.bind(self));
+            },
+            function (xhr) {
+                self.loadingBar.progress = xhr.loaded / xhr.total;
+            },
+            function (err) {
+                console.log("An error happened");
+            }
+        );
+
+    }
 
     resize() {
         this.camera.aspect = window.innerWidth / window.innerHeight;
