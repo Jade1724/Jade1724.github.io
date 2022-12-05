@@ -142,7 +142,59 @@ class App{
         const btn = new ARButton( this.renderer, { onSessionStart, onSessionEnd } );
         
         //Add gestures here
+        this.gestures = new ControllerGestures(this.renderer);
+        this.gestures.addEventListener('tap', (e) => {
+            console.log('tap');
+            self.ui.updateElement('info', 'tap');
+
+            if (!self.knight.object.visible) {
+                self.knight.object.visible = true;
+                self.knight.object.position.set(0, -0.3, -0.5).add(e.position);
+                self.scene.add(self.knight.object);
+            }
+        })
         
+        this.gestures.addEventListener('swipe', (e) => {
+            console.log(e);
+            self.ui.updateElement('info', `swipe ${e.direction}`);
+            if (self.knight.object.visible) {
+                self.knight.object.visible = false;
+                self.scene.remove(self.knight.object);
+            }
+        })
+
+        this.gestures.addEventListener('pan', (e) => {
+            console.log(e);
+            if (e.initialise !== undefined) {
+                self.startPosition = self.knight.object.position.clone();
+            } else {
+                const pos = self.startPosition.clone().add(e.delta.multiplyScalar(3));
+                self.knight.object.position.copy(pos);
+                self.ui.updateElement('info', `pan x:${e.delta.x.toFixed(3)} y:${e.delta.y.toFixed(3)} z:${e.delta.z.toFixed(3)}`);
+            }
+        });
+
+        this.gestures.addEventListener('pinch', (e) => {
+            console.log(e);
+            if (e.initialise !== undefined) {
+                self.startScale = self.knight.object.scale.clone();
+            } else {
+                const scale = self.startScale.clone().multiplyScalar(e.scale);
+                self.knight.object.scale.copy(scale);
+                self.ui.updateElement('info', `pinch delta: ${e.delta.toFixed(3)} scale: ${e.scale.toFixed(3)}`)
+            }
+        })
+
+        this.gestures.addEventListener('rotate', (e) => {
+            console.log(e);
+            if (e.initialise !== undefined) {
+                self.startQuaternion = self.knight.object.quaternion.clone();
+            } else {
+                self.knight.object.quaternion.copy(self.startQuaternion);
+                self.knight.object.rotateY(e.theta);
+                self.ui.updateElement('info', `rotate ${e.theta.toFixed(3)}`);
+            }
+        })
         this.renderer.setAnimationLoop( this.render.bind(this) );
     }
     
