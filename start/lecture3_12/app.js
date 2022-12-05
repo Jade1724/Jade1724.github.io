@@ -150,7 +150,7 @@ class App{
                         self.knight.object.visible = true;
                     
                 }
-            })
+            }
             
         }
 
